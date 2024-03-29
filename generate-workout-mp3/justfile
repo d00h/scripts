@@ -1,0 +1,40 @@
+JUST:="just --justfile="+justfile()
+IMAGE_TAG:="generate-workout-mp3"
+
+@_all:
+  {{ JUST }} --list
+
+@generate-all:
+  fd --extension md . {{ justfile_directory() }}/workout  | xargs -n1 -r {{ JUST }} run
+
+@build *ARGS:
+  docker build --tag {{ IMAGE_TAG }} {{ ARGS }} .
+
+clean:
+  rm -rf {{ justfile_directory() }}/output
+  rm -rf {{ justfile_directory() }}/cache
+
+@run:
+  fd --extension py . {{ justfile_directory() }}/presets | \
+    xargs -I{} {{ JUST }} \
+        python {} generate \
+          --gain-level=15 --voice=nova --cache-directory=/app/cache \
+          --output-format=combine --output-directory=/app/output
+  rsync -r {{ justfile_directory() }}/output/* ~/Sync/Tablet/Musics/Training/Workout/
+
+python NAME *ARGS:
+  #!/bin/sh
+  echo {{ NAME }}
+  SCRIPT_NAME=/app/$(basename {{ NAME }})
+  docker run -i --rm \
+      --env=OPENAI_API_KEY=${OPENAI_API_KEY} \
+      --volume $(realpath {{ NAME }}):${SCRIPT_NAME} \
+      --volume {{ justfile_directory() }}/output:/app/output \
+      --volume {{ justfile_directory() }}/cache:/app/cache \
+      {{ IMAGE_TAG }} ${SCRIPT_NAME} {{ ARGS }} 
+
+@shell *ARGS:
+  docker run -it \
+      --entrypoint bash \
+      {{ IMAGE_TAG }} {{ ARGS }} 
+ 
