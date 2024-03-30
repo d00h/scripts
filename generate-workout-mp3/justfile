@@ -14,8 +14,8 @@ clean:
   rm -rf {{ justfile_directory() }}/output
   rm -rf {{ justfile_directory() }}/cache
 
-@run:
-  fd --extension py . {{ justfile_directory() }}/presets | \
+@generate DIRECTORY:
+  fd --extension py . {{ DIRECTORY }} | \
     xargs -I{} {{ JUST }} \
         python {} generate \
           --gain-level=15 --voice=nova --cache-directory=/app/cache \
