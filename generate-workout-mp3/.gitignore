@@ -1,4 +1,5 @@
 cache/
 output/
+presets/
 __pycache__
 .venv/

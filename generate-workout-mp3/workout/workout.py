@@ -94,9 +94,11 @@ class Workout:
             self.acc_audio.append(audio)
         return self
 
-    def wait(self, hours: int = 0, minutes: int = 0, seconds: int = 0) -> "Workout":
-        total_seconds = (minutes + hours * 60) * 60 + seconds
-        audio = self.audio_factory.silent(total_seconds * 1000)
+    def wait(
+        self, hours: int = 0, minutes: int = 0, seconds: int = 0, milliseconds: int = 0
+    ) -> "Workout":
+        total_milliseconds = ((minutes + hours * 60) * 60 + seconds) * 1000 + milliseconds
+        audio = self.audio_factory.silent(total_milliseconds)
         self.acc_audio.append(audio)
         return self
 
