@@ -1,4 +1,5 @@
 import logging
+import sys
 from argparse import ArgumentParser
 from datetime import timedelta
 from os import getcwd, path
@@ -23,6 +24,7 @@ def init_logger():
 
 
 def create_parser() -> ArgumentParser:
+
     parser = ArgumentParser()
 
     output_group = parser.add_argument_group("Output")
@@ -44,6 +46,8 @@ def create_parser() -> ArgumentParser:
     audio_group.add_argument("--bit-rate", default="192k")
 
     parser.add_argument("command", choices=["generate"])
+    name, _ = path.splitext(path.basename(sys.argv[0]))
+    parser.set_defaults(name=name)
 
     return parser
 
@@ -51,7 +55,7 @@ def create_parser() -> ArgumentParser:
 class Workout:
 
     @classmethod
-    def from_cmdline(cls, name: str) -> "Workout":
+    def from_cmdline(cls) -> "Workout":
         parser = create_parser()
         args = parser.parse_args()
 
@@ -60,7 +64,7 @@ class Workout:
         output_factory = OutputBuilder.get_factory(args.output_format)
         output_builder = output_factory(
             output_directory=args.output_directory,
-            workout_name=name,
+            workout_name=args.name,
             bit_rate=args.bit_rate
         )
 
