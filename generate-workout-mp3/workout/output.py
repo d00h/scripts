@@ -80,6 +80,7 @@ class SplitOutputBuilder(OutputBuilder):
         total = format_timedelta(segment)
         filename = path.join(output_directory, f"{self.idx} - {step_name} - {total}.mp3")
         log.info(f"save {filename}")
+        print(path.basename(filename))
         segment.export(filename, format="mp3", bitrate=self.bit_rate)
 
     def close(self):
@@ -102,4 +103,5 @@ class CombineOutputBuilder(OutputBuilder):
         total = format_timedelta(self.acc)
         filename = path.join(self.output_directory, f"{self.workout_name}-{total}.mp3")
         log.info(f"save {filename}")
+        print(path.basename(filename))
         self.acc.export(filename, format="mp3", bitrate=self.bit_rate)

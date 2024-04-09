@@ -12,10 +12,9 @@ IMAGE_TAG:="generate-workout-mp3"
 
 clean:
   rm -rf {{ justfile_directory() }}/output
-  rm -rf {{ justfile_directory() }}/cache
 
 @generate DIRECTORY:
-  fd --extension py . {{ DIRECTORY }} | \
+  find {{ DIRECTORY }} -type f | \
     xargs -I{} {{ JUST }} \
         python {} generate \
           --gain-level=15 --voice=nova --cache-directory=/app/cache \
@@ -32,6 +31,12 @@ python NAME *ARGS:
       --volume {{ justfile_directory() }}/output:/app/output \
       --volume {{ justfile_directory() }}/cache:/app/cache \
       {{ IMAGE_TAG }} ${SCRIPT_NAME} {{ ARGS }} 
+
+run NAME:
+  {{ JUST }} python {{ NAME }} generate | xargs -i{} mpg123 {{ justfile_directory() }}/output/{}
+
+vifm:
+  @vifm output/ ~/Sync/Tablet/Musics/Training/Workout/
 
 @shell *ARGS:
   docker run -it \
