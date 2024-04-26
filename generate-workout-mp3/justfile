@@ -4,22 +4,19 @@ IMAGE_TAG:="generate-workout-mp3"
 @_all:
   {{ JUST }} --list
 
-@generate-all:
-  fd --extension md . {{ justfile_directory() }}/workout  | xargs -n1 -r {{ JUST }} run
-
 @build *ARGS:
   docker build --tag {{ IMAGE_TAG }} {{ ARGS }} .
 
 clean:
   rm -rf {{ justfile_directory() }}/output
 
-@generate DIRECTORY:
-  find {{ DIRECTORY }} -type f | \
+@generate DIRECTORY='presets':
+  -find {{ DIRECTORY }} -type f | \
     xargs -I{} {{ JUST }} \
         python {} generate \
           --gain-level=15 --voice=nova --cache-directory=/app/cache \
           --output-format=combine --output-directory=/app/output
-  rsync -r {{ justfile_directory() }}/output/* ~/Sync/Tablet/Musics/Training/Workout/
+  rsync -r  --delete {{ justfile_directory() }}/output/* ~/Sync/Tablet/Musics/Training/Workout/
 
 python NAME *ARGS:
   #!/bin/sh

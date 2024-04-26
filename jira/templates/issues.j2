@@ -1,0 +1,2 @@
+{% for issue in issues %}{{ issue["key"] }} : {{ issue["fields"]["assignee"]["name"] }} : {{ issue["fields"]["updated"] }} : {{ issue["fields"]["summary"] }} : {{ issue["fields"]["status"]["name"] }}
+{% endfor %}

@@ -1,0 +1,14 @@
+JUST:="just --justfile="+justfile()
+
+@_all:
+    {{ JUST }} --list
+
+@run *ARGS:
+    python -m jira-client {{ ARGS }}
+
+@issues *ARGS:
+    {{ JUST }} run issues {{ ARGS }}
+
+@projects *ARGS:
+    {{ JUST }} run projects {{ ARGS }}
+
